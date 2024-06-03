@@ -1,0 +1,20 @@
+Computational Inefficiencies and Anti-patterns in the Code Block
+- Use of useMemo with multiple dependencies:
+	The useMemo hook recalculates the sorted balances whenever balances or prices change, which might be unnecessary if prices don't 	directly impact the sorting.
+	Improvement: Separate the logic for filtering and sorting to minimize recalculations.
+
+- Nested function calls within useMemo:
+	The filter and sort functions are nested, making the code harder to read and debug.
+	Improvement: Break down the logic into smaller, reusable functions.
+
+- Incorrect condition logic:
+	The condition lhsPriority > -99 should be balancePriority > -99 and balance.amount <= 0 is included within if unnecessarily.
+	Improvement: Correct the condition logic to properly filter balances.
+
+- Using any type for blockchain:
+	Using any type undermines TypeScript's type safety.
+	Improvement: Define a proper type for blockchain.
+
+- Duplicated mapping over sortedBalances:
+	Mapping over sortedBalances twice can be avoided for better performance.
+	Improvement: Combine mapping and transformation in a single pass.
