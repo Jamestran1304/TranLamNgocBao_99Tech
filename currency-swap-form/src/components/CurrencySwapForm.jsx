@@ -18,6 +18,7 @@ const schema = yup.object().shape({
 const CurrencySwapForm = () => {
   const [currencies, setCurrencies] = useState([]);
   const [exchangeRates, setExchangeRates] = useState({});
+  const [swappedAmount, setSwappedAmount] = useState(null);
   const {
     control,
     handleSubmit,
@@ -43,7 +44,15 @@ const CurrencySwapForm = () => {
 
   const onSubmit = (data) => {
     console.log('Swapping currencies:', data);
-    // Perform swap logic here
+    const fromRate = exchangeRates[data.fromCurrency];
+    const toRate = exchangeRates[data.toCurrency];
+
+    if (fromRate && toRate) {
+      const result = (data.amount * fromRate) / toRate;
+      setSwappedAmount(result);
+    } else {
+      setSwappedAmount('Invalid currency selection');
+    }
   };
 
   return (
@@ -97,9 +106,12 @@ const CurrencySwapForm = () => {
           <p className='error-message'>{errors.amount.message}</p>
         )}
       </div>
-      <button type='submit' className='submit-button'>
-        Swap
-      </button>
+      <button type="submit" className="submit-button">Swap</button>
+      {swappedAmount && (
+        <div className="result">
+          <h3>Swapped Amount: {swappedAmount}</h3>
+        </div>
+      )}
     </form>
   );
 };
