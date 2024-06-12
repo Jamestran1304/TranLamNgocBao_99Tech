@@ -20,6 +20,7 @@ const CurrencySwapForm = () => {
   const [exchangeRates, setExchangeRates] = useState({});
   const [swappedAmount, setSwappedAmount] = useState(null);
   const {
+    register,
     control,
     handleSubmit,
     formState: { errors },
@@ -33,10 +34,9 @@ const CurrencySwapForm = () => {
       const pricesRes = await axios.get(
         'https://interview.switcheo.com/prices.json'
       );
-      // const tokensRes = await axios.get(
-      //   'https://github.com/Switcheo/token-icons/tree/main/tokens'
-      // );
       setExchangeRates(pricesRes.data);
+
+      setCurrencies(pricesRes.data);
       // setCurrencies(tokensRes.data);
     };
     fetchData();
@@ -44,53 +44,75 @@ const CurrencySwapForm = () => {
 
   const onSubmit = (data) => {
     console.log('Swapping currencies:', data);
-    const fromRate = exchangeRates[data.fromCurrency];
-    const toRate = exchangeRates[data.toCurrency];
-
+    const { fromCurrency, toCurrency } = data;
+    const fromRate = fromCurrency;
+    console.log(fromRate);
+    const toRate = toCurrency;
+    console.log(toRate);
+    let { price: priceFromCurrency } = currencies.find(
+      (currency) => currency.currency === fromCurrency
+    );
+    let { price: priceToCurrency } = currencies.find(
+      (currency) => currency.currency === toRate
+    );
     if (fromRate && toRate) {
-      const result = (data.amount * fromRate) / toRate;
+      const result = (data.amount * priceFromCurrency) / priceToCurrency;
       setSwappedAmount(result);
     } else {
       setSwappedAmount('Invalid currency selection');
     }
   };
 
+  // console.log(currencies);
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='currency-swap-form'>
       <div className='form-group'>
         <label>From Currency</label>
-        <Controller
-          name='fromCurrency'
-          control={control}
-          render={({ field }) => (
-            <Select
-              {...field}
-              options={currencies.map((currency) => ({
-                value: currency.symbol,
-                label: currency.name,
-              }))}
-            />
-          )}
-        />
+        <select {...register('fromCurrency')}>
+          {currencies.map((currency, index) => (
+            <option
+              value={currency.currency}
+              key={index}
+              style={{ padding: '200px', height: '150px' }}
+            >
+              <span>{currency.currency}</span>
+              <span
+                style={{
+                  backgroundImage: `url('https://raw.githubusercontent.com/Switcheo/token-icons/main/tokens/${currency.currency}.svg')`,
+                  display: 'inline-block',
+                  width: '50px',
+                  height: '50px',
+                }}
+              ></span>
+            </option>
+          ))}
+        </select>
         {errors.fromCurrency && (
           <p className='error-message'>{errors.fromCurrency.message}</p>
         )}
       </div>
       <div className='form-group'>
         <label>To Currency</label>
-        <Controller
-          name='toCurrency'
+        {/* <Controller
+          name='fromCurrency'
           control={control}
           render={({ field }) => (
             <Select
               {...field}
               options={currencies.map((currency) => ({
-                value: currency.symbol,
-                label: currency.name,
+                value: currency.currency,
+                label: currency.currency,
               }))}
             />
           )}
-        />
+        /> */}
+        <select {...register('toCurrency')}>
+          {currencies.map((currency, index) => (
+            <option value={currency.currency} key={index}>
+              {currency.currency}
+            </option>
+          ))}
+        </select>
         {errors.toCurrency && (
           <p className='error-message'>{errors.toCurrency.message}</p>
         )}
@@ -106,9 +128,11 @@ const CurrencySwapForm = () => {
           <p className='error-message'>{errors.amount.message}</p>
         )}
       </div>
-      <button type="submit" className="submit-button">Swap</button>
+      <button type='submit' className='submit-button'>
+        Swap
+      </button>
       {swappedAmount && (
-        <div className="result">
+        <div className='result'>
           <h3>Swapped Amount: {swappedAmount}</h3>
         </div>
       )}
