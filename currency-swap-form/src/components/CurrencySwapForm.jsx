@@ -75,15 +75,19 @@ const CurrencySwapForm = () => {
               key={index}
               style={{ padding: '200px', height: '150px' }}
             >
-              <span>{currency.currency}</span>
-              <span
+              <div>
+                <span>{currency.currency}</span>
+                <img src={require(`assets/icon/ADA.svg`)} alt='' />
+              </div>
+
+              {/* <span
                 style={{
                   backgroundImage: `url('https://raw.githubusercontent.com/Switcheo/token-icons/main/tokens/${currency.currency}.svg')`,
                   display: 'inline-block',
                   width: '50px',
                   height: '50px',
                 }}
-              ></span>
+              ></span> */}
             </option>
           ))}
         </select>
@@ -110,6 +114,7 @@ const CurrencySwapForm = () => {
           {currencies.map((currency, index) => (
             <option value={currency.currency} key={index}>
               {currency.currency}
+              {/* <img src={`assets/icon/${currency.currency}.svg`} alt='' /> */}
             </option>
           ))}
         </select>
